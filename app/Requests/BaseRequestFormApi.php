@@ -3,10 +3,11 @@
 namespace App\Requests;
 
 use Illuminate\Http\Request;
-use Validator;
+use Illuminate\Support\Facades\Validator;
+//use Validator;
 
 
-abstract class BaseRequestForm
+abstract class BaseRequestFormApi
 {
     protected $_request;
     /**
@@ -33,10 +34,8 @@ abstract class BaseRequestForm
             $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 if ($forceDie) {
-                    $error=$validator->errors()->toArray();
-                    //return response($error,406);
-                    $error = \Illuminate\Validation\ValidationException::withMessages($error);
-                    throw $error;
+                    $this->status = false;
+                    $this->errors  =$validator->errors()->toArray();
                 }else{
                     $this->status = false;
                     $this->errors  =$validator->errors()->toArray();
@@ -64,6 +63,9 @@ abstract class BaseRequestForm
         return $this->errors;
     }
 
+    public function setRequest($request){
+        $this->_request=$request;
+    }
 
     public function request()
     {
